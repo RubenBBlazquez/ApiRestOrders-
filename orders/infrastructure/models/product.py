@@ -1,7 +1,9 @@
 from django.db import models
 
-
 class Product(models.Model):
+    """
+    Model that represents a product.
+    """
     id = models.AutoField(primary_key=True)
     reference = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
