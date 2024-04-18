@@ -8,9 +8,9 @@ class OrderProduct(models.Model):
     Model that represents the relationship between a product and an order.
     """
     id = models.AutoField(primary_key=True)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    order = models.ForeignKey('Order', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    order = models.ForeignKey('Order', related_name='order_products', on_delete=models.CASCADE)
 
 
 class Order(models.Model):
