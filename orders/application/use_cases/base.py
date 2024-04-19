@@ -2,6 +2,7 @@ from abc import abstractmethod, ABC
 
 from django.db import models
 
+from orders.application.use_cases.commands.base import ICommand
 from orders.domain.repositories.base import IRepository
 
 
@@ -11,14 +12,14 @@ class IUseCase(ABC):
     """
 
     @abstractmethod
-    def execute(self, **kwargs):
+    def execute(self, command: ICommand):
         """
         Execute the use case
 
         Parameters
         ----------
-        kwargs
-            The keyword arguments
+        command : ICommand
+            The command where the use case will get the data from
         """
         raise NotImplementedError()
 
@@ -36,7 +37,7 @@ class ListUseCase(IUseCase):
     def __init__(self, repository: IRepository):
         self.repository = repository
 
-    def execute(self, **kwargs) -> list[models.Model]:
+    def execute(self, command: ICommand) -> list[models.Model]:
         return self.repository.get_all()
 
 
@@ -53,15 +54,14 @@ class GetByIdUseCase(IUseCase):
     def __init__(self, repository: IRepository):
         self.repository = repository
 
-    def execute(self, **kwargs) -> models.Model:
+    def execute(self, command: ICommand) -> models.Model:
         """
         Execute the use case to get an entity by its identifier
 
         Parameters
         ----------
-        kwargs
-         identifier: int
-            The identifier of the entity to retrieve.
+        command : ICommand
+            The command where the use case will get the data from
 
         Returns
         -------
@@ -73,9 +73,4 @@ class GetByIdUseCase(IUseCase):
         ValueError
             If 'identifier' is missing from kwargs or is not an integer.
         """
-        identifier = kwargs.get('identifier')
-
-        if identifier is None or not isinstance(identifier, int):
-            raise ValueError("An integer 'identifier' must be provided")
-
-        return self.repository.get_by_id(identifier=identifier)
+        return self.repository.get_by_id(**command.data())
