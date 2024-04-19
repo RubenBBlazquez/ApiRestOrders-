@@ -35,9 +35,9 @@ class GetByIdCommand(ICommand):
     """
 
     def __init__(self, identifier: int):
-        self.id = identifier
+        self.identifier = identifier
 
     def data(self) -> dict[str, Any]:
         return {
-            "id": self.id
+            "identifier": self.identifier
         }
