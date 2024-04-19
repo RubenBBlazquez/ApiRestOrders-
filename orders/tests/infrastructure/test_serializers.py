@@ -21,12 +21,11 @@ def test_serialize_order_without_products():
     del result['id']
 
     expected_result = {
-        'articles': [],
+        'products': [],
         'total_price_without_taxes': '20.00',
         'total_price_with_taxes': '30.00',
         'created_at': '2024-01-01T00:00:00Z'
     }
-
     assert result == expected_result
 
 
@@ -38,7 +37,7 @@ def test_serialize_product():
         name='Product 1',
         description='Description of product 1',
         price_without_taxes=10,
-        price_with_taxes=20,
+        taxes=20,
     ).save()
 
     result = ProductSerializer(
@@ -51,7 +50,7 @@ def test_serialize_product():
         'name': 'Product 1',
         'description': 'Description of product 1',
         'price_without_taxes': '10.00',
-        'price_with_taxes': '20.00',
+        'taxes': '20.00',
         'created_at': '2024-01-01T00:00:00Z'
     }
 
@@ -66,7 +65,7 @@ def test_serialize_order_with_products():
         name='Product 1',
         description='Description of product 1',
         price_without_taxes=10,
-        price_with_taxes=20,
+        taxes=20,
     )
     product.save()
     order = Order(
@@ -86,7 +85,7 @@ def test_serialize_order_with_products():
     del result['id']
 
     expected_result = {
-        'articles': [{'quantity': 50, 'reference': 'product_1'}],
+        'products': [{'quantity': 50, 'reference': 'product_1'}],
         'total_price_without_taxes': '20.00',
         'total_price_with_taxes': '30.00',
         'created_at': '2024-01-01T00:00:00Z'
