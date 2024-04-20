@@ -4,8 +4,9 @@ from orders.infrastructure.endpoints.apis.base import BaseAPI
 from orders.infrastructure.repositories.product_repository import ProductRepository
 from orders.infrastructure.serializers.product_serializer import ProductSerializer
 
-api = BaseAPI(ProductRepository(), ProductSerializer)
+products_api = BaseAPI(ProductRepository(), ProductSerializer)
 
 django_urls = [
-    path('test/', api.get)
+    path('get_product_by_id/', products_api.get, name='get_product_by_id'),
+    path('get_all_products/', products_api.get, name='get_all_products'),
 ]

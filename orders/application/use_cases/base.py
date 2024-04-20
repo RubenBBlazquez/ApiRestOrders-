@@ -24,7 +24,7 @@ class IUseCase(ABC):
         raise NotImplementedError()
 
 
-class ListUseCase(IUseCase):
+class GetAllUseCase(IUseCase):
     """
     Interface that represents a list use case
 

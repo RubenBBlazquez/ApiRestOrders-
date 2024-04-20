@@ -15,5 +15,5 @@ class ProductSerializer(CustomSerializer, serializers.Serializer):
 
     @classmethod
     def from_model(cls, model_object: models.Model) -> ProductSerializer:
-        return cls(model_object)
+        return cls(model_object, many=True)
 

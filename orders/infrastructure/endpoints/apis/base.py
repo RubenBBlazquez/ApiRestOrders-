@@ -1,12 +1,13 @@
 from abc import ABC
+from typing import Type
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST, require_GET
 
-from orders.application.use_cases.base import GetByIdUseCase
-from orders.application.use_cases.commands.base import GetByIdCommand
+from orders.application.use_cases.base import GetByIdUseCase, GetAllUseCase
+from orders.application.use_cases.commands.base import GetByIdCommand, DummyCommand
 from orders.domain.repositories.base import IRepository
 from orders.infrastructure.serializers.base import CustomSerializer
 
@@ -23,7 +24,7 @@ class IApi(ABC):
 
 
 class BaseAPI(IApi):
-    def __init__(self, repository: IRepository, serializer: CustomSerializer):
+    def __init__(self, repository: IRepository, serializer: Type[CustomSerializer]):
         self.repository = repository
         self.serializer = serializer
 
@@ -41,7 +42,12 @@ class BaseAPI(IApi):
                 safe=False
             )
 
-        limit = request.GET.get('limit', 10)
-        offset = request.GET.get('offset', 0)
+        use_case = GetAllUseCase(self.repository)
+        command = DummyCommand()
+        entities = use_case.execute(command)
 
-        return JsonResponse({})
+        return JsonResponse(
+            data=self.serializer.from_model(entities).data,
+            safe=False,
+            status=200
+        )
