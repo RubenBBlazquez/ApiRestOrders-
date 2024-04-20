@@ -83,3 +83,31 @@ def test_create_product():
         'taxes': '20.00',
         'created_at': '2024-04-20T00:00:00Z'
     }
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_edit_product():
+    test_product = create_test_product()
+    body = {
+        'identifier': test_product.pk,
+        'reference': 'product_edited',
+        'name': 'Product 1 edited',
+        'description': 'Description of product 1 edited',
+        'price_without_taxes': 25,
+        'taxes': 35
+    }
+    url = reverse("edit_product")
+    client = Client()
+    response = client.put(url, data=body)
+    result = response.json()
+    del result['id']
+
+    assert result == {
+        'reference': 'product_edited',
+        'name': 'Product 1 edited',
+        'description': 'Description of product 1 edited',
+        'price_without_taxes': '25.00',
+        'taxes': '35.00',
+        'created_at': '2024-04-20T00:00:00Z'
+    }

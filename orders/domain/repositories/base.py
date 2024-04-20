@@ -55,3 +55,17 @@ class IRepository(ABC):
             The saved entity
         """
         raise NotImplementedError()
+
+    @abstractmethod
+    def update(self, identifier: int, entity: IDomainEntity) -> models.Model:
+        """
+        Update an entity
+
+        Parameters
+        ----------
+        identifier : int
+            The identifier of the entity
+        entity : IDomainEntity
+            The entity to be deleted
+        """
+        raise NotImplementedError()

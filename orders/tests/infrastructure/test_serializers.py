@@ -2,7 +2,7 @@ import freezegun
 import pytest
 
 from orders.infrastructure.models.order import OrderProduct
-from orders.infrastructure.serializers.order_serializer import OrderProductSerializer, OrderSerializer
+from orders.infrastructure.serializers.order_serializer import OrderSerializer
 from orders.infrastructure.serializers.product_serializer import ProductSerializer
 from orders.infrastructure.models import Order, Product
 

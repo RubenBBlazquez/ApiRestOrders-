@@ -17,3 +17,6 @@ class OrderRepository(IRepository):
 
     def save(self, entity) -> models.Model:
         pass
+
+    def update(self, identifier: int, entity) -> models.Model:
+        pass

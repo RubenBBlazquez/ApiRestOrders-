@@ -20,3 +20,15 @@ class ProductRepository(IRepository):
         product = Product(**entity.parameters())
         product.save()
         return product
+
+    def update(self, identifier: int, entity: ProductDomain) -> models.Model:
+        product = Product.objects.get(pk=identifier)
+
+        product.reference = entity.reference
+        product.name = entity.name
+        product.description = entity.description
+        product.price_without_taxes = entity.price_without_taxes
+        product.taxes = entity.taxes
+        product.save()
+
+        return product

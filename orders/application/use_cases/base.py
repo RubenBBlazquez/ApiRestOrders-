@@ -109,3 +109,38 @@ class CreateUseCase(IUseCase):
             If 'identifier' is missing from kwargs or is not an integer.
         """
         return self.repository.save(**command.data())
+
+
+class EditUseCase(IUseCase):
+    """
+    Interface that represents a get use case
+
+    Attributes
+    ----------
+    repository : IRepository
+        The repository from we will get the entity
+    """
+
+    def __init__(self, repository: IRepository):
+        self.repository = repository
+
+    def execute(self, command: ICommand) -> models.Model:
+        """
+        Execute the use case to edit an entity by its identifier
+
+        Parameters
+        ----------
+        command : ICommand
+            The command where the use case will get the data from
+
+        Returns
+        -------
+        models.Model
+            The retrieved entity.
+
+        Raises
+        ------
+        ValueError
+            If 'identifier' is missing from kwargs or is not an integer.
+        """
+        return self.repository.update(**command.data())
