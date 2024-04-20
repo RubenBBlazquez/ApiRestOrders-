@@ -1,4 +1,4 @@
-from django.db import models
+from django.db.models import QuerySet
 
 from orders.domain.repositories.base import IRepository
 from orders.domain.entities.product import ProductDomain
@@ -13,15 +13,15 @@ class ProductRepository(IRepository):
     def get_by_id(self, identifier: int) -> Product:
         return Product.objects.filter(pk=identifier).first()
 
-    def get_all(self) -> Product:
+    def get_all(self) -> QuerySet[Product]:
         return Product.objects.all()
 
-    def save(self, entity: ProductDomain) -> models.Model:
+    def save(self, entity: ProductDomain) -> Product:
         product = Product(**entity.parameters())
         product.save()
         return product
 
-    def update(self, identifier: int, entity: ProductDomain) -> models.Model:
+    def update(self, identifier: int, entity: ProductDomain) -> Product:
         product = Product.objects.get(pk=identifier)
 
         product.reference = entity.reference
