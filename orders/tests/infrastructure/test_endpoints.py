@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 from django.test.client import Client
 
-from orders.tests.conftest import create_test_product
+from orders.tests.conftest import create_test_product, create_test_order, create_test_order_product
 
 
 @pytest.mark.django_db
@@ -111,3 +111,51 @@ def test_edit_product():
         'taxes': '35.00',
         'created_at': '2024-04-20T00:00:00Z'
     }
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_get_order_by_id():
+    order = create_test_order()
+    create_test_order_product(order)
+    url = reverse("get_order_by_id")
+    client = Client()
+    response = client.get(f'{url}?id={order.pk}')
+    result = response.json()
+    del result['id']
+
+    assert result == {
+        'products': [{'quantity': 10, 'reference': 'product_1'}],
+        'total_price_without_taxes': '20.00',
+        'total_price_with_taxes': '30.00',
+        'created_at': '2024-04-20T00:00:00Z'
+    }
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_get_all_orders():
+    order = create_test_order()
+    create_test_order_product(order)
+    order2 = create_test_order()
+    url = reverse("get_all_orders")
+    client = Client()
+    response = client.get(url)
+    result = response.json()
+
+    assert result == [
+        {
+            'id': order.id,
+            'products': [{'quantity': 10, 'reference': 'product_1'}],
+            'total_price_without_taxes': '20.00',
+            'total_price_with_taxes': '30.00',
+            'created_at': '2024-04-20T00:00:00Z'
+        },
+        {
+            'id': order2.id,
+            'products': [],
+            'total_price_without_taxes': '20.00',
+            'total_price_with_taxes': '30.00',
+            'created_at': '2024-04-20T00:00:00Z'
+        }
+    ]
