@@ -6,8 +6,9 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST, require_GET
 
-from orders.application.use_cases.base import GetByIdUseCase, GetAllUseCase
+from orders.application.use_cases.base import GetByIdUseCase, GetAllUseCase, CreateUseCase
 from orders.application.use_cases.commands.base import GetByIdCommand, DummyCommand
+from orders.application.use_cases.commands.create_product import CreateProductCommand
 from orders.domain.repositories.base import IRepository
 from orders.infrastructure.serializers.base import CustomSerializer
 
@@ -47,7 +48,19 @@ class BaseAPI(IApi):
         entities = use_case.execute(command)
 
         return JsonResponse(
-            data=self.serializer.from_model(entities).data,
+            data=self.serializer.from_model(entities, True).data,
             safe=False,
             status=200
+        )
+
+    def post(self, request: WSGIRequest):
+        body = request.POST.dict()
+        create_use_case = CreateUseCase(self.repository)
+        command = CreateProductCommand.from_config(body)
+        entity = create_use_case.execute(command)
+
+        return JsonResponse(
+            self.serializer.from_model(entity).data,
+            status=200,
+            safe=False
         )

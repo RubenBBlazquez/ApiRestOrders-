@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from orders.domain.entities.base import IDomainEntity
 
 from django.db import models
 
@@ -39,14 +40,14 @@ class IRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def save(self, entity) -> models.Model:
+    def save(self, entity: IDomainEntity) -> models.Model:
         """
         Save an entity
 
         Parameters
         ----------
-        entity : object
-            The entity to save
+        entity : IDomainEntity
+            The entity to be saved
 
         Returns
         -------

@@ -14,8 +14,8 @@ class OrderProductSerializer(CustomSerializer, serializers.ModelSerializer):
         fields = ['quantity', 'reference']
 
     @classmethod
-    def from_model(cls, model_object: models.Model) -> OrderProductSerializer:
-        return cls(model_object)
+    def from_model(cls, model_object: models.Model, many = False) -> OrderProductSerializer:
+        return cls(model_object, many=many)
 
 
 class OrderSerializer(CustomSerializer, serializers.Serializer):
@@ -30,5 +30,5 @@ class OrderSerializer(CustomSerializer, serializers.Serializer):
         fields = ['id', 'articles', 'total_price_without_taxes', 'total_price_with_taxes', 'created_at']
 
     @classmethod
-    def from_model(cls, model_object: models.Model) -> OrderSerializer:
-        return cls(model_object)
+    def from_model(cls, model_object: models.Model, many = False) -> OrderSerializer:
+        return cls(model_object, many=many)

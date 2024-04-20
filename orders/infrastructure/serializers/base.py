@@ -8,5 +8,5 @@ from rest_framework import serializers
 class CustomSerializer:
     @classmethod
     @abstractmethod
-    def from_model(cls, model_object: models.Model) -> serializers.ModelSerializer:
+    def from_model(cls, model_object: models.Model, many=False) -> serializers.ModelSerializer:
         raise NotImplementedError()

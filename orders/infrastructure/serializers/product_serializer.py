@@ -14,6 +14,6 @@ class ProductSerializer(CustomSerializer, serializers.Serializer):
     created_at = serializers.DateTimeField()
 
     @classmethod
-    def from_model(cls, model_object: models.Model) -> ProductSerializer:
-        return cls(model_object, many=True)
+    def from_model(cls, model_object: models.Model, many=False) -> ProductSerializer:
+        return cls(model_object, many=many)
 

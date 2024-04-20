@@ -57,3 +57,29 @@ def test_get_all_products():
             'created_at': '2024-04-20T00:00:00Z'
         }
     ]
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_create_product():
+    body = {
+        'reference': 'product_1',
+        'name': 'Product 1',
+        'description': 'Description of product 1',
+        'price_without_taxes': 10,
+        'taxes': 20
+    }
+    url = reverse("create_product")
+    client = Client()
+    response = client.post(url, data=body)
+    result = response.json()
+    del result['id']
+
+    assert result == {
+        'reference': 'product_1',
+        'name': 'Product 1',
+        'description': 'Description of product 1',
+        'price_without_taxes': '10.00',
+        'taxes': '20.00',
+        'created_at': '2024-04-20T00:00:00Z'
+    }
