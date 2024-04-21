@@ -19,9 +19,14 @@ services:
         echo 'Waiting for MySQL server to be available...'
         sleep 5
       done
+      
       echo '[DEV] Base de datos disponible.'
       echo '[DEV] Creando/actualizando tablas...'
       python3 manage.py migrate
+
+      echo '[DEV] Lanzando tests para comprobar que todo funciona correctamente'
+      pytest
+      
       echo '[DEV] Iniciando el servidor...'
       exec python3 manage.py runserver 0.0.0.0:8000
       "
