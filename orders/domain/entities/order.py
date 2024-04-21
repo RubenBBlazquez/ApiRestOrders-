@@ -33,7 +33,7 @@ class OrderProductElement:
     @classmethod
     def from_config(cls, config: dict[str, Any]) -> OrderProductElement:
         converter = deepcopy(cattr.global_converter)
-        return converter.structure(config)
+        return converter.structure(config, cls)
 
 
 @define(auto_attribs=True)

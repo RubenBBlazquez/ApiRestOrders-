@@ -1,8 +1,13 @@
+import attr
+
 from orders.application.use_cases.commands.base import GetByIdCommand
 import pytest
 
+from orders.application.use_cases.commands.create_order import CreateOrderCommand
 from orders.application.use_cases.commands.create_product import CreateProductCommand
+from orders.application.use_cases.commands.edit_order import EditOrderCommand
 from orders.application.use_cases.commands.edit_product import EditProductCommand
+from orders.domain.entities.order import OrderProductElement
 from orders.domain.entities.product import ProductDomain
 import cattrs
 
@@ -147,3 +152,97 @@ def test_edit_product_command():
 def test_create_product_command_validation_fields_error(fields):
     with pytest.raises(cattrs.errors.ClassValidationError):
         EditProductCommand.from_config(fields)
+
+
+@pytest.mark.parametrize(
+    'fields',
+    [
+        {
+            "identifier": 1,
+        },
+        {
+            "products": [],
+        },
+    ],
+)
+def test_edit_order_command_validation_error(fields):
+    with pytest.raises(cattrs.errors.ClassValidationError):
+        EditOrderCommand.from_config(fields)
+
+
+def test_edit_order_command():
+    command = EditOrderCommand.from_config(
+        {
+            'identifier': '1',
+            'products': [
+                {
+                    'reference': 'product_1',
+                    'quantity': 10
+                }
+            ]
+        }
+    )
+    result = command.data()
+    expected = {
+        'identifier': 1,
+        'products': [
+            {
+                'reference': 'product_1',
+                'quantity': 10,
+                'product_price_without_taxes': 0,
+                'product_taxes': 0
+            }
+        ]
+    }
+
+    assert result == expected
+
+
+def test_create_order_command():
+    command = CreateOrderCommand.from_config(
+        {
+            'products': [
+                {
+                    'reference': 'product_1',
+                    'quantity': 10
+                }
+            ]
+        }
+    )
+    result = command.data()
+    expected = {
+        'products': [
+            {
+                'reference': 'product_1',
+                'quantity': 10,
+                'product_price_without_taxes': 0,
+                'product_taxes': 0
+            }
+        ]
+    }
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    'fields',
+    [
+        {
+            'products': [
+                {
+                    'reference': 'product_1',
+                }
+            ]
+        },
+        {
+            'products': [
+                {
+                    'quantity': 10,
+                }
+            ]
+        },
+        {},
+    ],
+)
+def test_create_product_command_validation_fields_error(fields):
+    with pytest.raises(cattrs.errors.ClassValidationError):
+        CreateProductCommand.from_config(fields)
