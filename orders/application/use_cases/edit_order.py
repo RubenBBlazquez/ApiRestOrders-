@@ -87,7 +87,9 @@ class EditOrderUseCase(CreateUseCase):
         not_valid_products = []
         order_entity = cast(Order, self.repository.get_by_id(command.identifier))
         order_domain = cast(OrderDomain, order_entity.to_domain())
-        new_products_to_check, products_to_remove, products_to_edit = order_domain.sync_order_with_new_products(new_products)
+        new_products_to_check, products_to_remove, products_to_edit = (
+            order_domain.sync_order_with_new_products(new_products)
+        )
 
         self._check_and_create_order_product(new_products_to_check, order_entity.id, order_domain, not_valid_products)
         self._remove_order_products(products_to_remove, order_entity.id)

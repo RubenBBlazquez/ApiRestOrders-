@@ -97,8 +97,6 @@ class OrderDomain(IDomainEntity):
 
     def _set_products_to_remove(
             self,
-            product_to_check: OrderProductElement,
-            index: int,
             new_products_references: list[str],
             products_to_remove: list[OrderProductElement]
     ):
@@ -108,19 +106,16 @@ class OrderDomain(IDomainEntity):
 
         Parameters
         ----------
-        product_to_check: OrderProductElement
-            The product to check
-        index: int
-            The index of the product to remove
         new_products_references: list[str]
             The references of the new products
         products_to_remove: list[OrderProductElement]
             The products to remove
 
         """
-        if product_to_check.reference not in new_products_references:
-            products_to_remove.append(self.products[index])
-            del self.products[index]
+        for index, product in enumerate(self.products.copy()):
+            if product.reference not in new_products_references:
+                products_to_remove.append(self.products[index])
+                del self.products[index]
 
     def _get_products_to_check_existence(self, new_products: list[OrderProductElement]):
         """
@@ -145,7 +140,7 @@ class OrderDomain(IDomainEntity):
     def sync_order_with_new_products(
             self,
             new_products: list[OrderProductElement]
-    ) -> tuple[list[OrderProductElement], list[OrderProductElement]]:
+    ) -> tuple[list[OrderProductElement], list[OrderProductElement], list[OrderProductElement]]:
         """
         Method to synchronize the order with new products.
         It will remove the products that are not in the new products list
@@ -167,12 +162,13 @@ class OrderDomain(IDomainEntity):
         new_products_to_check_existence = self._get_products_to_check_existence(
             new_products
         )
-        products_to_remove = []
-        products_to_edit = []
+        products_to_remove: list[OrderProductElement] = []
+        products_to_edit: list[OrderProductElement] = []
 
         for index, product in enumerate(self.products.copy()):
             self._set_products_to_edit(new_products, index, product, products_to_edit)
-            self._set_products_to_remove(product, index, new_products_references, products_to_remove)
+
+        self._set_products_to_remove(new_products_references, products_to_remove)
 
         return new_products_to_check_existence, products_to_remove, products_to_edit
 
