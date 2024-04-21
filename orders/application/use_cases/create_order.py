@@ -49,8 +49,8 @@ class CreateOrderUseCase(CreateUseCase):
             order_product_element_domain = OrderProductElement(
                 reference=product.reference,
                 quantity=order_product.quantity,
-                price_without_taxes=product.price_without_taxes,
-                taxes=product.taxes
+                product_price_without_taxes=float(product.price_without_taxes),
+                product_taxes=float(product.taxes)
             )
             order_domain.add_product(order_product_element_domain)
 

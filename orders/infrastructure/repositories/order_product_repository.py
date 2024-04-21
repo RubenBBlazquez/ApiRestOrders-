@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from django.db.models import QuerySet
 from orders.domain.entities.order_product import OrderProductDomain
@@ -30,5 +30,18 @@ class OrderProductRepository(IRepository):
         order_product.save()
         return order_product
 
-    def update(self, identifier: int, entity) -> OrderProduct:
-        pass
+    def update(self, identifier: Optional[int], entity: OrderProductDomain) -> OrderProduct:
+        order_product = OrderProduct.objects.get(product__reference=entity.reference, order__id=entity.order_id)
+
+        order_product.product = Product.objects.get(reference=entity.reference)
+        order_product.quantity = entity.quantity
+        order_product.order = Order.objects.get(pk=entity.order_id)
+        order_product.save()
+
+        return order_product
+
+    def delete(self, entity: OrderProductDomain) -> None:
+        OrderProduct.objects.filter(
+            product__reference=entity.reference,
+            order__id=entity.order_id
+        ).delete()

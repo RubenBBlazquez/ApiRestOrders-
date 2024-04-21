@@ -19,4 +19,5 @@ django_urls = [
     path('get_order_by_id/', orders_api.get, name='get_order_by_id'),
     path('get_all_orders/', orders_api.get, name='get_all_orders'),
     path('create_order/', orders_api.post, name='create_order'),
+    path('edit_order/', orders_api.put, name='edit_order'),
 ]

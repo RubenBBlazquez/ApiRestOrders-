@@ -1,11 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
-
 from django.db.models import QuerySet
-
 from orders.domain.entities.base import IDomainEntity
-
-from django.db import models
+from orders.infrastructure.models.base import ICustomModel
 
 
 class IRepository(ABC):
@@ -15,7 +12,7 @@ class IRepository(ABC):
     """
 
     @abstractmethod
-    def get_by_id(self, identifier: int) -> models.Model:
+    def get_by_id(self, identifier: int) -> ICustomModel:
         """
         Get an entity by its identifier
 
@@ -26,13 +23,13 @@ class IRepository(ABC):
 
         Returns
         -------
-        models.Model
-            django orm model object
+        ICustomModel
+            django orm model object that inherits from ICustomModel
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def get_by_field(self, field: str, value: Any) -> QuerySet[models.Model]:
+    def get_by_field(self, field: str, value: Any) -> QuerySet[ICustomModel]:
         """
         Get an entity by a field
 
@@ -45,25 +42,26 @@ class IRepository(ABC):
 
         Returns
         -------
-        QuerySet[models.Model]
-            QuerySet of django orm model objects
+        QuerySet[ICustomModel]
+            QuerySet of django orm model object that inherits from ICustomModel
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def get_all(self) -> QuerySet[models.Model]:
+    def get_all(self) -> QuerySet[ICustomModel]:
         """
         Get all entities
 
         Returns
         -------
-        QuerySet[models.Model]
-            QuerySet of django orm model objects
+        QuerySet[ICustomModel]
+            QuerySet of django orm model object that inherits from ICustomModel
+
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def save(self, entity: IDomainEntity) -> models.Model:
+    def save(self, entity: IDomainEntity) -> ICustomModel:
         """
         Save an entity
 
@@ -74,13 +72,14 @@ class IRepository(ABC):
 
         Returns
         -------
-        models.Model
-            The saved entity
+        ICustomModel
+            django orm model object that inherits from ICustomModel
+
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def update(self, identifier: int, entity: IDomainEntity) -> models.Model:
+    def update(self, identifier: int, entity: IDomainEntity) -> ICustomModel:
         """
         Update an entity
 
@@ -90,5 +89,28 @@ class IRepository(ABC):
             The identifier of the entity
         entity : IDomainEntity
             The entity to be deleted
+
+        Returns
+        -------
+        ICustomModel
+            django orm model object that inherits from ICustomModel
+
+        """
+        raise NotImplementedError()
+
+    def delete(self, entity: IDomainEntity) -> ICustomModel:
+        """
+        Update an entity
+
+        Parameters
+        ----------
+        entity : IDomainEntity
+            The entity to be deleted
+
+        Returns
+        -------
+        ICustomModel
+            django orm model object that inherits from ICustomModel
+
         """
         raise NotImplementedError()

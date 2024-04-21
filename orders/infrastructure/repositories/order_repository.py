@@ -1,8 +1,10 @@
 from typing import Any
 from django.db.models import QuerySet
 
+from orders.domain.entities.base import IDomainEntity
 from orders.domain.entities.order import OrderDomain
 from orders.domain.repositories.base import IRepository
+from orders.infrastructure.models.base import ICustomModel
 from orders.infrastructure.models.order import Order, OrderProduct
 
 
@@ -30,4 +32,11 @@ class OrderRepository(IRepository):
         return order
 
     def update(self, identifier: int, entity: OrderDomain) -> Order:
-        pass
+        order = Order.objects.get(pk=identifier)
+
+        order.total_price_without_taxes = entity.total_price_without_taxes
+        order.total_price_with_taxes = entity.total_price_with_taxes
+        order.save()
+
+        return order
+

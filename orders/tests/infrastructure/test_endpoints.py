@@ -229,3 +229,116 @@ def test_create_order_without_valid_products():
             'product_3'
         ]
     }
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_edit_order_with_only_new_products_to_add():
+    order = create_test_order()
+    product = create_test_product('product_1')
+    create_test_order_product(order, product)
+
+    create_test_product('product_2')
+    create_test_product('product_3')
+
+    url = reverse("edit_order")
+    client = Client()
+    response = client.put(url, data=json.dumps({
+        'identifier': order.pk,
+        'products': [
+            {'reference': 'product_1', 'quantity': 10},
+            {'reference': 'product_2', 'quantity': 10},
+            {'reference': 'product_3', 'quantity': 10}
+        ]
+    }), content_type='application/json')
+    result = response.json()
+    del result['edited_order']['id']
+
+    assert result == {
+        'edited_order':
+            {
+                'products': [
+                    {'quantity': 10, 'reference': 'product_1'},
+                    {'quantity': 10, 'reference': 'product_2'},
+                    {'quantity': 10, 'reference': 'product_3'}
+                ],
+                'total_price_without_taxes': '300.00',
+                'total_price_with_taxes': '900.00',
+                'created_at': '2024-04-20T00:00:00Z'
+            },
+        'not_valid_products': []
+    }
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_edit_order_with_products_to_remove():
+    order = create_test_order()
+    product = create_test_product('product_1')
+    create_test_order_product(order, product)
+
+    create_test_product('product_2')
+    create_test_product('product_3')
+
+    url = reverse("edit_order")
+    client = Client()
+    response = client.put(url, data=json.dumps({
+        'identifier': order.pk,
+        'products': [
+            {'reference': 'product_2', 'quantity': 10},
+            {'reference': 'product_3', 'quantity': 10}
+        ]
+    }), content_type='application/json')
+    result = response.json()
+    del result['edited_order']['id']
+
+    assert result == {
+        'edited_order':
+            {
+                'products': [
+                    {'quantity': 10, 'reference': 'product_2'},
+                    {'quantity': 10, 'reference': 'product_3'}
+                ],
+                'total_price_without_taxes': '200.00',
+                'total_price_with_taxes': '600.00',
+                'created_at': '2024-04-20T00:00:00Z'
+            },
+        'not_valid_products': []
+    }
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_edit_order_with_products_with_different_quantity():
+    order = create_test_order()
+    product = create_test_product('product_1')
+    create_test_order_product(order, product)
+
+    product2 = create_test_product('product_2')
+    create_test_order_product(order, product2)
+
+    url = reverse("edit_order")
+    client = Client()
+    response = client.put(url, data=json.dumps({
+        'identifier': order.pk,
+        'products': [
+            {'reference': 'product_1', 'quantity': 100},
+            {'reference': 'product_2', 'quantity': 500}
+        ]
+    }), content_type='application/json')
+    result = response.json()
+    del result['edited_order']['id']
+
+    assert result == {
+        'edited_order':
+            {
+                'products': [
+                    {'quantity': 100, 'reference': 'product_1'},
+                    {'quantity': 500, 'reference': 'product_2'}
+                ],
+                'total_price_without_taxes': '6000.00',
+                'total_price_with_taxes': '18000.00',
+                'created_at': '2024-04-20T00:00:00Z'
+            },
+        'not_valid_products': []
+    }

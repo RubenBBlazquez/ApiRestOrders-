@@ -1,9 +1,8 @@
 from abc import abstractmethod, ABC
-
-from django.db import models
-
+from django.db.models import QuerySet
 from orders.application.use_cases.commands.base import ICommand
 from orders.domain.repositories.base import IRepository
+from orders.infrastructure.models.base import ICustomModel
 
 
 class IUseCase(ABC):
@@ -37,7 +36,7 @@ class GetAllUseCase(IUseCase):
     def __init__(self, repository: IRepository):
         self.repository = repository
 
-    def execute(self, command: ICommand) -> list[models.Model]:
+    def execute(self, command: ICommand) -> QuerySet[ICustomModel]:
         return self.repository.get_all()
 
 
@@ -54,7 +53,7 @@ class GetByIdUseCase(IUseCase):
     def __init__(self, repository: IRepository):
         self.repository = repository
 
-    def execute(self, command: ICommand) -> models.Model:
+    def execute(self, command: ICommand) -> ICustomModel:
         """
         Execute the use case to get an entity by its identifier
 
@@ -65,7 +64,7 @@ class GetByIdUseCase(IUseCase):
 
         Returns
         -------
-        models.Model
+        ICustomModel
             The retrieved entity.
 
         Raises
@@ -89,7 +88,7 @@ class CreateUseCase(IUseCase):
     def __init__(self, repository: IRepository):
         self.repository = repository
 
-    def execute(self, command: ICommand) -> models.Model:
+    def execute(self, command: ICommand) -> ICustomModel:
         """
         Execute the use case to get an entity by its identifier
 
@@ -100,7 +99,7 @@ class CreateUseCase(IUseCase):
 
         Returns
         -------
-        models.Model
+        ICustomModel
             The retrieved entity.
 
         Raises
@@ -124,7 +123,7 @@ class EditUseCase(IUseCase):
     def __init__(self, repository: IRepository):
         self.repository = repository
 
-    def execute(self, command: ICommand) -> models.Model:
+    def execute(self, command: ICommand) -> ICustomModel:
         """
         Execute the use case to edit an entity by its identifier
 
@@ -135,7 +134,7 @@ class EditUseCase(IUseCase):
 
         Returns
         -------
-        models.Model
+        ICustomModel
             The retrieved entity.
 
         Raises

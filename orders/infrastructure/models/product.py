@@ -1,7 +1,11 @@
 from django.db import models
 
+from orders.domain.entities.base import IDomainEntity
+from orders.infrastructure.models.base import ICustomModel
+from orders.domain.entities.product import ProductDomain
 
-class Product(models.Model):
+
+class Product(ICustomModel, models.Model):
     """
     Model that represents a product.
     """
@@ -12,3 +16,12 @@ class Product(models.Model):
     price_without_taxes = models.DecimalField(max_digits=10, decimal_places=2)
     taxes = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def to_domain(self) -> IDomainEntity:
+        return ProductDomain(
+            reference=self.reference,
+            name=self.name,
+            description=self.description,
+            price_without_taxes=float(self.price_without_taxes),
+            taxes=float(self.taxes)
+        )

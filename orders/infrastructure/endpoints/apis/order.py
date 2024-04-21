@@ -1,10 +1,12 @@
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 
 from orders.application.use_cases.commands.create_order import CreateOrderCommand
+from orders.application.use_cases.commands.edit_order import EditOrderCommand
 from orders.application.use_cases.create_order import CreateOrderUseCase
+from orders.application.use_cases.edit_order import EditOrderUseCase
 from orders.infrastructure.endpoints.apis.base import BaseAPI
 from orders.infrastructure.repositories.order_product_repository import OrderProductRepository
 from orders.infrastructure.repositories.order_repository import OrderRepository
@@ -50,6 +52,27 @@ class OrdersAPI(BaseAPI):
         return JsonResponse(
             {
                 'created_order': order,
+                'not_valid_products': not_valid_products
+            },
+            status=200,
+            safe=False
+        )
+
+    @method_decorator(require_http_methods(["PUT"]))
+    def put(self, request: WSGIRequest):
+        data = safe_loads(request.body.decode('utf-8'))
+        edit_use_case = EditOrderUseCase(
+            self.repository,
+            self.product_repository,
+            self.order_product_repository
+        )
+        command = EditOrderCommand.from_config(data)
+        not_valid_products, entity = edit_use_case.execute(command)
+        order = self.serializer.from_model(entity).data
+
+        return JsonResponse(
+            {
+                'edited_order': order,
                 'not_valid_products': not_valid_products
             },
             status=200,
