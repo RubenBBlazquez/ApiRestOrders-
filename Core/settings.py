@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'Core.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {
-        "ENGINE": 'mysql.connector.django',
+        "ENGINE": 'django.db.backends.mysql',
         "NAME": os.getenv("MYSQL_DATABASE"),
         "USER": os.getenv("MYSQL_USER"),
         "PASSWORD": os.getenv("MYSQL_ROOT_PASSWORD"),

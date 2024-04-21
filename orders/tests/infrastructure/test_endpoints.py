@@ -75,15 +75,17 @@ def test_create_product():
     client = Client()
     response = client.post(url, data=body, content_type='application/json')
     result = response.json()
-    del result['id']
+    del result['created_product']['id']
 
     assert result == {
-        'reference': 'product_1',
-        'name': 'Product 1',
-        'description': 'Description of product 1',
-        'price_without_taxes': '10.00',
-        'taxes': '20.00',
-        'created_at': '2024-04-20T00:00:00Z'
+        'created_product': {
+            'reference': 'product_1',
+            'name': 'Product 1',
+            'description': 'Description of product 1',
+            'price_without_taxes': '10.00',
+            'taxes': '20.00',
+            'created_at': '2024-04-20T00:00:00Z'
+        }
     }
 
 
@@ -103,15 +105,17 @@ def test_edit_product():
     client = Client()
     response = client.put(url, data=body)
     result = response.json()
-    del result['id']
+    del result['edited_product']['id']
 
     assert result == {
-        'reference': 'product_edited',
-        'name': 'Product 1 edited',
-        'description': 'Description of product 1 edited',
-        'price_without_taxes': '25.00',
-        'taxes': '35.00',
-        'created_at': '2024-04-20T00:00:00Z'
+        'edited_product': {
+            'reference': 'product_edited',
+            'name': 'Product 1 edited',
+            'description': 'Description of product 1 edited',
+            'price_without_taxes': '25.00',
+            'taxes': '35.00',
+            'created_at': '2024-04-20T00:00:00Z'
+        }
     }
 
 
