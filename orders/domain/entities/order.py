@@ -71,7 +71,6 @@ class OrderDomain(IDomainEntity):
     def _set_products_to_edit(
             self,
             new_products: list[OrderProductElement],
-            index: int, product_to_check,
             products_to_edit: list[OrderProductElement]
     ):
         """
@@ -81,19 +80,15 @@ class OrderDomain(IDomainEntity):
         ----------
         new_products: list[OrderProductElement]
             The new products to compare with
-        index: int
-            The index of the product we are checking
-        product_to_check
-            The product to check
-
         """
-        for new_product in new_products:
-            equal_reference = product_to_check.reference == new_product.reference
-            distinct_quantity = product_to_check.quantity != new_product.quantity
+        for index, product in enumerate(self.products.copy()):
+            for new_product in new_products:
+                equal_reference = product.reference == new_product.reference
+                distinct_quantity = product.quantity != new_product.quantity
 
-            if equal_reference and distinct_quantity:
-                self.products[index].quantity = new_product.quantity
-                products_to_edit.append(self.products[index])
+                if equal_reference and distinct_quantity:
+                    self.products[index].quantity = new_product.quantity
+                    products_to_edit.append(self.products[index])
 
     def _set_products_to_remove(
             self,
@@ -165,9 +160,7 @@ class OrderDomain(IDomainEntity):
         products_to_remove: list[OrderProductElement] = []
         products_to_edit: list[OrderProductElement] = []
 
-        for index, product in enumerate(self.products.copy()):
-            self._set_products_to_edit(new_products, index, product, products_to_edit)
-
+        self._set_products_to_edit(new_products, products_to_edit)
         self._set_products_to_remove(new_products_references, products_to_remove)
 
         return new_products_to_check_existence, products_to_remove, products_to_edit
@@ -195,4 +188,4 @@ class OrderDomain(IDomainEntity):
     @classmethod
     def from_config(cls, config: dict[str, Any]) -> OrderDomain:
         converter = deepcopy(cattr.global_converter)
-        return converter.structure(config)
+        return converter.structure(config, cls)
