@@ -1,4 +1,8 @@
 from abc import ABC, abstractmethod
+from typing import Any
+
+from django.db.models import QuerySet
+
 from orders.domain.entities.base import IDomainEntity
 
 from django.db import models
@@ -28,14 +32,33 @@ class IRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_all(self) -> list[models.Model]:
+    def get_by_field(self, field: str, value: Any) -> QuerySet[models.Model]:
+        """
+        Get an entity by a field
+
+        Parameters
+        ----------
+        field : str
+            The field of the entity
+        value : Any
+            The value of the field
+
+        Returns
+        -------
+        QuerySet[models.Model]
+            QuerySet of django orm model objects
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_all(self) -> QuerySet[models.Model]:
         """
         Get all entities
 
         Returns
         -------
-        list[models.Model]
-            List of django orm model objects
+        QuerySet[models.Model]
+            QuerySet of django orm model objects
         """
         raise NotImplementedError()
 

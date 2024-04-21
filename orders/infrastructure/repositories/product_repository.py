@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.db.models import QuerySet
 
 from orders.domain.repositories.base import IRepository
@@ -12,6 +14,9 @@ class ProductRepository(IRepository):
 
     def get_by_id(self, identifier: int) -> Product:
         return Product.objects.filter(pk=identifier).first()
+
+    def get_by_field(self, field: str, value: Any) -> QuerySet[Product]:
+        return Product.objects.filter(**{field: value})
 
     def get_all(self) -> QuerySet[Product]:
         return Product.objects.all()

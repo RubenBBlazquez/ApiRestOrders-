@@ -9,33 +9,27 @@ import cattr
 
 
 @define(auto_attribs=True, frozen=True)
-class ProductDomain(IDomainEntity):
+class OrderProductDomain(IDomainEntity):
     """
     Domain entity that represents a product
 
     Attributes
     ----------
     reference : str
-        The reference of the product
-    name : str
-        The name of the product
-    description : str
-        The description of the product
-    price_without_taxes : float
-        The price of the product without taxes
-    taxes : float
-        The taxes of the product
+        The id of the product
+    order_id : str
+        The id of the order
+    quantity : int
+        The quantity of the product
     """
     reference: str
-    name: str
-    description: str
-    price_without_taxes: float
-    taxes: float
+    order_id: int
+    quantity: int
 
     def parameters(self) -> dict[str, Any]:
         return asdict(self)
 
     @classmethod
-    def from_config(cls, config: dict[str, Any]) -> ProductDomain:
+    def from_config(cls, config: dict[str, Any]) -> OrderProductDomain:
         converter = deepcopy(cattr.global_converter)
         return converter.structure(config, cls)

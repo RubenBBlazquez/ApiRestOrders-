@@ -17,9 +17,9 @@ class ProductAPI(BaseAPI):
 
     @method_decorator(require_POST)
     def post(self, request: WSGIRequest):
-        body = request.POST.dict()
+        data = safe_loads(request.body.decode('utf-8'))
         create_use_case = CreateUseCase(self.repository)
-        command = CreateProductCommand.from_config(body)
+        command = CreateProductCommand.from_config(data)
         entity = create_use_case.execute(command)
 
         return JsonResponse(

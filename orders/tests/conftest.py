@@ -4,9 +4,9 @@ from orders.infrastructure.models import Product, Order
 from orders.infrastructure.models.order import OrderProduct
 
 
-def create_test_product():
+def create_test_product(reference='product_1'):
     product = Product(
-        reference='product_1',
+        reference=reference,
         name='Product 1',
         description='Description of product 1',
         price_without_taxes=10,

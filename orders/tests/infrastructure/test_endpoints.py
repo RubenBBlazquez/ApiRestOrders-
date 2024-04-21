@@ -1,3 +1,5 @@
+import json
+
 import freezegun
 import pytest
 
@@ -71,7 +73,7 @@ def test_create_product():
     }
     url = reverse("create_product")
     client = Client()
-    response = client.post(url, data=body)
+    response = client.post(url, data=body, content_type='application/json')
     result = response.json()
     del result['id']
 
@@ -159,3 +161,71 @@ def test_get_all_orders():
             'created_at': '2024-04-20T00:00:00Z'
         }
     ]
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_create_order_with_valid_products():
+    create_test_product('product_1')
+    create_test_product('product_2')
+    create_test_product('product_3')
+
+    url = reverse("create_order")
+    client = Client()
+    response = client.post(url, data=json.dumps({
+        'products': [
+            {'reference': 'product_1', 'quantity': 10},
+            {'reference': 'product_2', 'quantity': 10},
+            {'reference': 'product_3', 'quantity': 10}
+        ]
+    }), content_type='application/json')
+
+    result = response.json()
+    del result['created_order']['id']
+
+    assert result == {
+        'created_order':
+            {
+                'products': [
+                    {'quantity': 10, 'reference': 'product_1'},
+                    {'quantity': 10, 'reference': 'product_2'},
+                    {'quantity': 10, 'reference': 'product_3'}
+                ],
+                'total_price_without_taxes': '300.00',
+                'total_price_with_taxes': '900.00',
+                'created_at': '2024-04-20T00:00:00Z'
+            },
+        'not_valid_products': []
+    }
+
+
+@pytest.mark.django_db
+@freezegun.freeze_time('2024-04-20')
+def test_create_order_without_valid_products():
+    url = reverse("create_order")
+    client = Client()
+    response = client.post(url, data=json.dumps({
+        'products': [
+            {'reference': 'product_1', 'quantity': 10},
+            {'reference': 'product_2', 'quantity': 10},
+            {'reference': 'product_3', 'quantity': 10}
+        ]
+    }), content_type='application/json')
+
+    result = response.json()
+    del result['created_order']['id']
+
+    assert result == {
+        'created_order':
+            {
+                'products': [],
+                'total_price_without_taxes': '0.00',
+                'total_price_with_taxes': '0.00',
+                'created_at': '2024-04-20T00:00:00Z'
+            },
+        'not_valid_products': [
+            'product_1',
+            'product_2',
+            'product_3'
+        ]
+    }
