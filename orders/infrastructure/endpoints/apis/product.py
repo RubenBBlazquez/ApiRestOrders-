@@ -1,6 +1,7 @@
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 
 from orders.application.use_cases.base import CreateUseCase, EditUseCase
@@ -15,6 +16,7 @@ class ProductAPI(BaseAPI):
     Class that represents the Product API
     """
 
+    @csrf_exempt
     @method_decorator(require_POST)
     def post(self, request: WSGIRequest):
         data = safe_loads(request.body.decode('utf-8'))
@@ -23,11 +25,14 @@ class ProductAPI(BaseAPI):
         entity = create_use_case.execute(command)
 
         return JsonResponse(
-            self.serializer.from_model(entity).data,
+            {
+                "created_product": self.serializer.from_model(entity).data
+            },
             status=200,
             safe=False
         )
 
+    @csrf_exempt
     @method_decorator(require_http_methods(["PUT"]))
     def put(self, request: WSGIRequest):
         data = safe_loads(request.body.decode('utf-8'))
@@ -36,7 +41,9 @@ class ProductAPI(BaseAPI):
         entity = edit_use_case.execute(command)
 
         return JsonResponse(
-            self.serializer.from_model(entity).data,
+            {
+                "edited_product": self.serializer.from_model(entity).data
+            },
             status=200,
             safe=False
         )

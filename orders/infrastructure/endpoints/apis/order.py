@@ -1,6 +1,7 @@
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 
 from orders.application.use_cases.commands.create_order import CreateOrderCommand
@@ -37,6 +38,7 @@ class OrdersAPI(BaseAPI):
         self.product_repository = product_repository
         self.order_product_repository = order_product_repository
 
+    @csrf_exempt
     @method_decorator(require_POST)
     def post(self, request: WSGIRequest):
         data = safe_loads(request.body.decode('utf-8'))
@@ -58,6 +60,7 @@ class OrdersAPI(BaseAPI):
             safe=False
         )
 
+    @csrf_exempt
     @method_decorator(require_http_methods(["PUT"]))
     def put(self, request: WSGIRequest):
         data = safe_loads(request.body.decode('utf-8'))
