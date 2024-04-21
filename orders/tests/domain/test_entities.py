@@ -245,6 +245,7 @@ def test_update_total_price_with_taxes():
 
     assert order_domain.total_price_with_taxes == 400
 
+
 def test_set_products_to_edit():
     order_domain = OrderDomain(
         products=[
@@ -288,6 +289,7 @@ def test_set_products_to_edit():
         )
     ]
 
+
 def test_set_products_to_remove():
     order_domain = OrderDomain(
         products=[
@@ -321,6 +323,7 @@ def test_set_products_to_remove():
             product_taxes=10
         )
     ]
+
 
 def test_get_products_to_check_existence():
     order_domain = OrderDomain(
@@ -362,6 +365,7 @@ def test_get_products_to_check_existence():
         )
     ]
 
+
 def test_sync_order_with_new_products():
     order_domain = OrderDomain(
         products=[
@@ -393,7 +397,8 @@ def test_sync_order_with_new_products():
         )
     ]
 
-    new_products_to_check_existence, products_to_remove, products_to_edit = order_domain.sync_order_with_new_products(new_products)
+    new_products_to_check_existence, products_to_remove, products_to_edit = order_domain.sync_order_with_new_products(
+        new_products)
 
     assert new_products_to_check_existence == [
         OrderProductElement(
