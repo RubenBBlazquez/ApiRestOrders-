@@ -1,3 +1,4 @@
+import cattrs.errors
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -47,7 +48,23 @@ class OrdersAPI(BaseAPI):
             self.product_repository,
             self.order_product_repository
         )
-        command = CreateOrderCommand.from_config(data)
+
+        try:
+            command = CreateOrderCommand.from_config(data)
+        except cattrs.errors.ClassValidationError as e:
+            return JsonResponse(
+                {
+                    "error": "Invalid structure in the request body",
+                    "valid_structure": {
+                        'products': [
+                            {'product_id': 'int', 'quantity': 'int'}
+                        ]
+                    },
+                },
+                status=400,
+                safe=False
+            )
+
         not_valid_products, entity = create_use_case.execute(command)
         order = self.serializer.from_model(entity).data
 
@@ -69,7 +86,24 @@ class OrdersAPI(BaseAPI):
             self.product_repository,
             self.order_product_repository
         )
-        command = EditOrderCommand.from_config(data)
+
+        try:
+            command = EditOrderCommand.from_config(data)
+        except cattrs.errors.ClassValidationError as e:
+            return JsonResponse(
+                {
+                    "error": "Invalid structure in the request body",
+                    "valid_structure": {
+                        "identifier": "int - The order identifier",
+                        'products': [
+                            {'product_id': 'int', 'quantity': 'int'}
+                        ]
+                    },
+                },
+                status=400,
+                safe=False
+            )
+
         not_valid_products, entity = edit_use_case.execute(command)
         order = self.serializer.from_model(entity).data
 

@@ -1,3 +1,4 @@
+import cattrs
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -21,7 +22,25 @@ class ProductAPI(BaseAPI):
     def post(self, request: WSGIRequest):
         data = safe_loads(request.body.decode('utf-8'))
         create_use_case = CreateUseCase(self.repository)
-        command = CreateProductCommand.from_config(data)
+
+        try:
+            command = CreateProductCommand.from_config(data)
+        except cattrs.errors.ClassValidationError as e:
+            return JsonResponse(
+                {
+                    "error": "Invalid structure in the request body",
+                    "valid_structure": {
+                        "reference": "str - The product reference",
+                        "name": "str - The product name",
+                        "description": "str - The product description",
+                        "price_without_taxes": "float - The product price without taxes",
+                        "taxes": "float - The product taxes"
+                    },
+                },
+                status=400,
+                safe=False
+            )
+
         entity = create_use_case.execute(command)
 
         return JsonResponse(
@@ -37,7 +56,25 @@ class ProductAPI(BaseAPI):
     def put(self, request: WSGIRequest):
         data = safe_loads(request.body.decode('utf-8'))
         edit_use_case = EditUseCase(self.repository)
-        command = EditProductCommand.from_config(data)
+        try:
+            command = EditProductCommand.from_config(data)
+        except cattrs.errors.ClassValidationError as e:
+            return JsonResponse(
+                {
+                    "error": "Invalid structure in the request body",
+                    "valid_structure": {
+                        "identifier": "int - The product identifier",
+                        "reference": "str - The product reference",
+                        "name": "str - The product name",
+                        "description": "str - The product description",
+                        "price_without_taxes": "float - The product price without taxes",
+                        "taxes": "float - The product taxes"
+                    },
+                },
+                status=400,
+                safe=False
+            )
+
         entity = edit_use_case.execute(command)
 
         return JsonResponse(
