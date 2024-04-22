@@ -23,6 +23,11 @@ python manage.py setup_project
 ```
 este comando se encargará de lanzar el servicio de mysql y el servidor de django mediante docker
 
+#### Si no quieres instalar las dependencias en tu ordenador, y conoces docker compose, puedes ahorrarte los 2 pasos anteriores, el de las dependencias y el del comando, ejecutando lo siguiente estando en la raiz del proyecto:
+```
+docker compose up --build -d
+```
+
 #### Una vez tengamos los servicios levantados, podremos acceder al api desde la siguiente URL:
 ```
 http://localhost:8080/
