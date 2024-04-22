@@ -25,7 +25,7 @@ este comando se encargará de lanzar el servicio de mysql y el servidor de djang
 
 #### Si no quieres instalar las dependencias en tu ordenador, y conoces docker compose, puedes ahorrarte los 2 pasos anteriores, el de las dependencias y el del comando, ejecutando lo siguiente estando en la raiz del proyecto:
 ```
-docker compose up --build -d
+docker compose --env-file ./config/.env  up -d --build (si estás en windows los slash serán '\' y si estás en linux '/')
 ```
 
 #### Una vez tengamos los servicios levantados, podremos acceder al api desde la siguiente URL:
